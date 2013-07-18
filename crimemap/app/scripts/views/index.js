@@ -11,9 +11,21 @@ Crimemap.IndexView = Ember.View.extend({
     },
 
     loadData: function() {
+        var self = this;
         var points = window.points = Crimemap.Crime.find();
         points.forEach(function(item, index) {
-            console.log(item.ycoord);
+            var xcoord = parseFloat(item.get('xcoord'));
+            var ycoord = parseFloat(item.get('ycoord'));
+            console.log(xcoord, ycoord);
+
+            var coords = new google.maps.LatLng(xcoord, ycoord);
+
+            var marker = new google.maps.Marker({
+                position: new google.maps.LatLng(32.2866754956, -110.969602928),
+                map: self.get('map'),
+                title: 'Hello world!'
+            });
+            console.log(self.get('map'));
         });
     },
 

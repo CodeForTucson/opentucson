@@ -1,4 +1,7 @@
-from django.db import models
+from django.contrib.gis.db import models
+from django.contrib.gis.gdal import SpatialReference, CoordTransform
+from django.contrib.gis.geos import Point, fromstr
+
 
 """
 XCoored: 993187.06069554;
@@ -29,9 +32,9 @@ optional = {'blank': True, 'null': True}
 
 class Crime(models.Model):
     #: x coordinate of incident
-    xcoord = models.FloatField(**optional)
+    xcoord = models.TextField(**optional)
     #: y coordinate of incident
-    ycoord = models.FloatField(**optional)
+    ycoord = models.TextField(**optional)
     #: id of incident
     inci_id = models.TextField(**optional)
     #: 100 block radius (code?) of incident reported
@@ -77,6 +80,15 @@ class Crime(models.Model):
     start_date = models.DateTimeField(**optional)
     report_date = models.DateTimeField(**optional)
     end_date = models.DateTimeField(**optional)
+    location = models.PointField('Point', srid=102249, default='POINT(0.0 0.0)', **optional)
+
+    def get_location_lng_lat(self):
+        #google_srid = SpatialReference(4326) # googles coordinate system SRID
+        #az_srid = SpatialReference(102249) # Az Central State Plane - SRID=102249
+        #transform = CoordTransform(az_srid, google_srid)
+        point = fromstr("POINT({0} {1})".format(self.location.y, self.location.x), srid=102649) # crimes location
+        point.transform(4326)
+        return "{0} {1}".format(point.y, point.x) # return lng lat coords for API usage
 
     def __unicode__(self):
         return self.inci_id

@@ -100,8 +100,12 @@ class Command(BaseCommand):
             else:
                 row['end_date'] = None
 
+            row['location'] = 'POINT({0} {1})'.format(row['ycoord'], row['xcoord'])
+
             crime, created = Crime.objects.get_or_create(**row)
             if created:
                 print 'CREATED {0}'.format(row['inci_id'])
             else:
                 print '{0} ALREADY EXISTS, SKIPPING'.format(row['inci_id'])
+
+            return
