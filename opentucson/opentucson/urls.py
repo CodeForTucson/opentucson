@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^api/v1/crimes/', include('crime.urls'), name='home'),
-    # url(r'^opentucson/', include('opentucson.foo.urls')),
+    #url(r'^crimes/map/$', include('opentucson.foo.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
 )

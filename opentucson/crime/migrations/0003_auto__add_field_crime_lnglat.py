@@ -8,20 +8,16 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding field 'Crime.lnglat'
+        db.add_column(u'crime_crime', 'lnglat',
+                      self.gf('django.contrib.gis.db.models.fields.PointField')(default='POINT(0.0 0.0)', null=True, blank=True),
+                      keep_default=False)
 
-        # Changing field 'Crime.ycoord'
-        db.alter_column(u'crime_crime', 'ycoord', self.gf('django.db.models.fields.TextField')(null=True))
-
-        # Changing field 'Crime.xcoord'
-        db.alter_column(u'crime_crime', 'xcoord', self.gf('django.db.models.fields.TextField')(null=True))
 
     def backwards(self, orm):
+        # Deleting field 'Crime.lnglat'
+        db.delete_column(u'crime_crime', 'lnglat')
 
-        # Changing field 'Crime.ycoord'
-        db.alter_column(u'crime_crime', 'ycoord', self.gf('django.db.models.fields.FloatField')(null=True))
-
-        # Changing field 'Crime.xcoord'
-        db.alter_column(u'crime_crime', 'xcoord', self.gf('django.db.models.fields.FloatField')(null=True))
 
     models = {
         u'crime.crime': {
@@ -42,9 +38,11 @@ class Migration(SchemaMigration):
             'howreceive': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'inci_id': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'location': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'", 'srid': '102249', 'null': 'True', 'blank': 'True'}),
+            'lnglat': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'", 'null': 'True', 'blank': 'True'}),
+            'location': ('django.contrib.gis.db.models.fields.PointField', [], {'default': "'POINT(0.0 0.0)'", 'srid': '102649', 'null': 'True', 'blank': 'True'}),
             'naturecode': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'neighborhd': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'neighborhood': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['crime.Neighborhood']", 'null': 'True', 'blank': 'True'}),
             'offense': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'plat': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'report_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
@@ -53,6 +51,13 @@ class Migration(SchemaMigration):
             'weapon2desc': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'xcoord': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'ycoord': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
+        },
+        u'crime.neighborhood': {
+            'Meta': {'object_name': 'Neighborhood'},
+            'geom': ('django.contrib.gis.db.models.fields.MultiPolygonField', [], {'srid': '102649'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '38'}),
+            'ward': ('django.db.models.fields.FloatField', [], {})
         }
     }
 

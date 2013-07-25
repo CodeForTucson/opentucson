@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'tucson_crime',                      # Or path to database file if using sqlite3.
+        'NAME': 'opentucson2',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'lovea',
         'PASSWORD': '',

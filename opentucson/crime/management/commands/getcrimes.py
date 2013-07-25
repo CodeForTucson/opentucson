@@ -3,7 +3,10 @@ import csv
 import datetime
 
 from django.core.management import BaseCommand, CommandError
-from crime.models import Crime
+from django.contrib.gis.geos import Point, fromstr
+from django.contrib.gis.geos import error
+
+from crime.models import Crime, Neighborhood
 
 import requests
 
@@ -100,12 +103,25 @@ class Command(BaseCommand):
             else:
                 row['end_date'] = None
 
-            row['location'] = 'POINT({0} {1})'.format(row['ycoord'], row['xcoord'])
+            try:
+                row['location'] = fromstr('POINT({0} {1})'.format(row['xcoord'], row['ycoord']), srid=102649)
+            except error.GEOSException:
+                pass
 
             crime, created = Crime.objects.get_or_create(**row)
+
             if created:
                 print 'CREATED {0}'.format(row['inci_id'])
+                return
+                try:
+                    crime.neighborhood = Neighborhood.objects.get(geom__contains='POINT({0} {1})'.format(
+                                                                                row['xcoord'], row['ycoord'])
+                    )
+                    crime.save()
+                except:
+                    print 'UNABLE TO ADD NEIGHBORHOOD'
+                    pass
+
             else:
                 print '{0} ALREADY EXISTS, SKIPPING'.format(row['inci_id'])
 
-            return

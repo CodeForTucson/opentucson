@@ -80,15 +80,34 @@ class Crime(models.Model):
     start_date = models.DateTimeField(**optional)
     report_date = models.DateTimeField(**optional)
     end_date = models.DateTimeField(**optional)
-    location = models.PointField('Point', srid=102249, default='POINT(0.0 0.0)', **optional)
+    location = models.PointField('Point', srid=102649, default='POINT(0.0 0.0)', **optional)
+    lnglat = models.PointField('LngLat', srid=4326, default='POINT(0.0 0.0)', **optional)
+    neighborhood = models.ForeignKey("Neighborhood", **optional)
+
+    #overwrite normal object manager with geodjangos
+    objects = models.GeoManager()
 
     def get_location_lng_lat(self):
-        #google_srid = SpatialReference(4326) # googles coordinate system SRID
-        #az_srid = SpatialReference(102249) # Az Central State Plane - SRID=102249
-        #transform = CoordTransform(az_srid, google_srid)
-        point = fromstr("POINT({0} {1})".format(self.location.y, self.location.x), srid=102649) # crimes location
+        point = fromstr("POINT({0} {1})".format(self.location.x, self.location.y), srid=102649) # crimes location
         point.transform(4326)
-        return "{0} {1}".format(point.y, point.x) # return lng lat coords for API usage
+        return "{0} {1}".format(point.x, point.y) # return lng lat coords for API usage
+
+    def save(self, *args, **kwargs):
+        point = fromstr("POINT({0} {1})".format(self.location.x, self.location.y), srid=102649)
+        point.transform(4326)
+        self.lnglat = fromstr("POINT({0} {1})".format(point.y, point.x), srid=4326)
+        super(Crime, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.inci_id
+
+
+class Neighborhood(models.Model):
+    name = models.CharField(max_length=38)
+    ward = models.FloatField()
+    geom = models.MultiPolygonField(srid=102649)
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return self.name
+

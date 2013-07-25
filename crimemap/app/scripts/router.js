@@ -1,4 +1,0 @@
-Crimemap.Router.map(function () {
-});
-
-
